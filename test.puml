@@ -1,0 +1,93 @@
+@startuml
+!include <archimate/Archimate>
+
+skinparam packageBackgroundColor #CCCCCC
+
+
+package LogDomain {
+  
+  archimate #Technology "LogServer" as LogServer <<technology-device>>
+}
+
+AdminZero as adminzero
+
+UserZero as adminzero
+
+package T0I{
+    archimate #Application "SVM01R" as SVM01 <<application-service>>
+    archimate #Technology "Res-Netapp01" as NETAPP01 <<technology-device>>
+    NETAPP01 .up.|> SVM01
+
+
+    archimate #Technology "Infra-HV01" as HV01 <<technology-device>>
+    archimate #Technology "Infra-HV02" as HV02 <<technology-device>>
+    archimate #Technology "Infra-HV03" as HV03 <<technology-device>>
+
+
+
+    archimate #Technology "AD-master" as ADmaster <<technology-device>>
+    archimate #Technology "LC" as PlatLC <<technology-device>> 
+    archimate #Technology "Firewall" as PlatFW <<technology-device>>
+
+}
+
+package T0R{
+    archimate #Application "SVM01R" as RSVM01 <<application-service>>
+    archimate #Technology "Res-Netapp01" as ResNETAPP01 <<technology-device>>
+    ResNETAPP01 .up.|> RSVM01
+
+    archimate #Technology "Res-HV01" as RHV01 <<technology-device>>
+    archimate #Technology "Res-HV02" as RHV02 <<technology-device>>
+    archimate #Technology "Res-HV03" as RHV03 <<technology-device>>
+    
+}
+
+package T1I{
+
+    archimate #Technology "AD" as AppAd <<technology-node>>
+    archimate #Technology "AD7" <<technology-node>>
+    archimate #Technology "AD8" <<technology-node>>
+    archimate #Technology "AD9" <<technology-node>>
+    archimate #Technology "AD10" <<technology-node>>        
+
+}
+
+package T1R{
+
+    archimate #Technology "AD2" as AppAd2 <<technology-node>>
+    archimate #Technology "AD3" <<technology-node>>
+    archimate #Technology "AD4" <<technology-node>>
+    archimate #Technology "AD5" <<technology-node>>
+    archimate #Technology "AD6" <<technology-node>>
+
+}
+
+
+
+package  T2R  {
+
+    archimate #Technology "VDI"  as UserVDI <<technology-node>>
+
+}
+
+
+T1R -[hidden]Left-> T1I
+T0I -Left-> T0R
+T1I -[hidden]down-> T0I
+T1R -[hidden]Up-> T0R
+T1R -[hidden]Up-> T2R
+
+PlatLC .down.>> LogServer
+Rel_Access_rw(HV01, SVM01, NFS)
+Rel_Access_rw(HV02, SVM01, NFS)
+Rel_Access_rw(HV03, SVM01, NFS)
+
+Rel_Access_rw(RHV01, RSVM01, NFS)
+Rel_Access_rw(RHV02, RSVM01, NFS)
+Rel_Access_rw(RHV03, RSVM01, NFS)
+
+adminzero ~left-> PlatFW
+HV01 ~UP~|> AppAd
+
+
+@enduml 
